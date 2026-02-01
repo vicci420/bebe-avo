@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bebé Arredondo von Oppersdorff 👶</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --card-hover: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .header .subtitle { color: var(--text-muted); font-size: 1.1em; }
+        .week-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2);
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label { color: var(--text-muted); margin-top: 5px; }
+        
+        /* Progress Bar */
+        .progress-container {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .progress-bar {
+            height: 12px;
+            background: var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #8b5cf6, #c084fc);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .tab:hover { background: var(--card-hover); }
+        .tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        /* Content Sections */
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        /* Timeline */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .timeline-week {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .timeline-week:hover { border-color: var(--primary); }
+        .timeline-week.current {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        .timeline-week.past { opacity: 0.6; }
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .week-title { font-weight: 600; font-size: 1.1em; }
+        .week-dates { color: var(--text-muted); font-size: 0.9em; }
+        .week-tasks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .task-tag {
+            background: var(--card-hover);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+        }
+        .task-tag.education { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .task-tag.medical { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .task-tag.purchase { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .task-tag.prep { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        
+        /* Shopping List */
+        .category-card {
+            background: var(--card);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .category-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .category-header:hover { background: var(--card-hover); }
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        .category-emoji { font-size: 1.5em; }
+        .category-stats {
+            display: flex;
+            gap: 15px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+        .category-body { display: none; padding: 0 20px 20px; }
+        .category-body.open { display: block; }
+        
+        .product {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        .product:hover { background: var(--card-hover); }
+        .product input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-right: 15px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        .product-info { flex: 1; }
+        .product-name { font-weight: 500; margin-bottom: 4px; }
+        .product-details { color: var(--text-muted); font-size: 0.85em; }
+        .product-price {
+            font-weight: 600;
+            color: var(--success);
+            margin-left: 15px;
+        }
+        .product-link {
+            margin-left: 10px;
+            color: var(--primary);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(99, 102, 241, 0.1);
+            transition: all 0.2s;
+        }
+        .product-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        .product.checked .product-name { text-decoration: line-through; opacity: 0.6; }
+        
+        /* Priority Items */
+        .priority-section {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(245, 158, 11, 0.1));
+            border: 1px solid var(--danger);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .priority-title {
+            color: #f87171;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .priority-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        .priority-item {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .priority-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+        .priority-info h4 { margin-bottom: 4px; }
+        .priority-info p { color: var(--text-muted); font-size: 0.9em; }
+        
+        /* Checklist */
+        .checklist-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        .checklist-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .checklist-priority {
+            width: 4px;
+            height: 40px;
+            border-radius: 2px;
+        }
+        .checklist-priority.high { background: var(--danger); }
+        .checklist-priority.medium { background: var(--warning); }
+        .checklist-priority.low { background: var(--success); }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: var(--bg);
+            transition: all 0.2s;
+        }
+        .checklist-item:hover { background: var(--card-hover); }
+        .checklist-item input { margin-right: 12px; }
+        .checklist-item label { flex: 1; cursor: pointer; }
+        .checklist-item .note { color: var(--text-muted); font-size: 0.85em; margin-left: 10px; }
+        .checklist-item .cost { background: var(--card-hover); padding: 4px 10px; border-radius: 6px; font-size: 0.85em; }
+        
+        /* Export Button */
+        .export-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(99, 102, 241, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .header h1 { font-size: 1.8em; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .tabs { justify-content: center; }
+            .export-btn { bottom: 20px; right: 20px; padding: 12px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>👶 Bebé Arredondo von Oppersdorff</h1>
+            <p class="subtitle">Centro de Preparación</p>
+            <div class="week-badge" id="currentWeek">Semana 26</div>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="daysLeft">98</div>
+                <div class="stat-label">Días Restantes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="itemsLeft">18</div>
+                <div class="stat-label">Items Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalCost">$15K</div>
+                <div class="stat-label">Costo Estimado</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completion">75%</div>
+                <div class="stat-label">Completado</div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-header">
+                <span>Progreso General</span>
+                <span id="progressPercent">75%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 75%"></div>
+            </div>
+        </div>
+        
+        <div class="priority-section">
+            <div class="priority-title">🔴 Compras Prioritarias (Faltan)</div>
+            <div class="priority-grid">
+                <div class="priority-item">
+                    <div class="priority-icon">🛏️</div>
+                    <div class="priority-info">
+                        <h4>Cuna / Colecho</h4>
+                        <p>$1,449 - $2,885 MXN</p>
+                    </div>
+                </div>
+                <div class="priority-item">
+                    <div class="priority-icon">🧒</div>
+                    <div class="priority-info">
+                        <h4>Bassinet / Moisés</h4>
+                        <p>$559 - $2,659 MXN</p>
+                    </div>
+                </div>
+                <div class="priority-item">
+                    <div class="priority-icon">🚗</div>
+                    <div class="priority-info">
+                        <h4>Car Seat</h4>
+                        <p>$1,559 - $6,999 MXN</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="timeline">📅 Timeline</div>
+            <div class="tab" data-tab="shopping">🛒 Compras</div>
+            <div class="tab" data-tab="checklist">✅ Checklist</div>
+        </div>
+        
+        <!-- Timeline Section -->
+        <div class="section active" id="timeline">
+            <div class="timeline" id="timelineContainer"></div>
+        </div>
+        
+        <!-- Shopping Section -->
+        <div class="section" id="shopping">
+            <div id="shoppingContainer"></div>
+        </div>
+        
+        <!-- Checklist Section -->
+        <div class="section" id="checklist">
+            <div class="checklist-card">
+                <div class="checklist-header">
+                    <div class="checklist-priority high"></div>
+                    <h3>🔴 Prioridad Alta (Día 1)</h3>
+                </div>
+                <div id="checklistHigh"></div>
+            </div>
+            <div class="checklist-card">
+                <div class="checklist-header">
+                    <div class="checklist-priority medium"></div>
+                    <h3>🟡 Prioridad Media (Primeras semanas)</h3>
+                </div>
+                <div id="checklistMedium"></div>
+            </div>
+            <div class="checklist-card">
+                <div class="checklist-header">
+                    <div class="checklist-priority low"></div>
+                    <h3>📋 Preparativos</h3>
+                </div>
+                <div id="checklistPrep"></div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="export-btn" onclick="exportData()">
+        📥 Exportar CSV
+    </button>
+
+    <script>
+        // Data
+        const timeline = [
+            { week: 26, dates: "26 Ene - 1 Feb", tasks: [
+                { text: "Call Doula Sandy", type: "education" },
+                { text: "Call Doula Gaby", type: "education" },
+                { text: "HIP Doula Lucy 7pm", type: "education" },
+                { text: "Inscripción IMSS", type: "medical" },
+                { text: "Lab tests", type: "medical" },
+                { text: "Comprar Pelota 75cm", type: "purchase" }
+            ]},
+            { week: 27, dates: "2 - 8 Feb", tasks: [
+                { text: "Videos MOM Center", type: "education" },
+                { text: "Cita IMSS 8:45AM", type: "medical" },
+                { text: "Primer pedido Amazon?", type: "purchase" }
+            ]},
+            { week: 28, dates: "9 - 15 Feb", tasks: [
+                { text: "VACUNA", type: "medical" },
+                { text: "Reunión Doula Sandy?", type: "education" }
+            ]},
+            { week: 29, dates: "16 - 22 Feb", tasks: [
+                { text: "Finalizar borrador PDN", type: "prep" },
+                { text: "Consulta Dr. Edwin", type: "medical" }
+            ]},
+            { week: 30, dates: "23 Feb - 1 Mar", tasks: [
+                { text: "Familiarizarse con BabyCenter App", type: "prep" },
+                { text: "Segundo pedido Amazon?", type: "purchase" }
+            ]},
+            { week: 31, dates: "2 - 8 Mar", tasks: [
+                { text: "Borrador Plan Postparto", type: "prep" }
+            ]},
+            { week: 32, dates: "9 - 15 Mar", tasks: [] },
+            { week: 33, dates: "16 - 22 Mar", tasks: [
+                { text: "Finalizar Valores Familiares", type: "prep" }
+            ]},
+            { week: 34, dates: "23 - 29 Mar", tasks: [
+                { text: "Curso online (regalo Beni+Noemi)", type: "education" }
+            ]},
+            { week: 35, dates: "30 Mar - 5 Abr", tasks: [
+                { text: "Tarjetas blanco/negro bebé", type: "purchase" }
+            ]},
+            { week: 36, dates: "6 - 12 Abr", tasks: [
+                { text: "Documentos Seguro", type: "prep" },
+                { text: "Confirmación Hospital", type: "medical" }
+            ]},
+            { week: 37, dates: "13 - 19 Abr", tasks: [] },
+            { week: 38, dates: "20 - 26 Abr", tasks: [
+                { text: "Dentista SvO", type: "medical" },
+                { text: "Iniciar banco calostro", type: "medical" }
+            ]},
+            { week: 39, dates: "27 Abr - 3 May", tasks: [
+                { text: "Banco calostro diario", type: "medical" }
+            ]},
+            { week: 40, dates: "4 - 10 May", tasks: [
+                { text: "¡Fecha estimada!", type: "prep" }
+            ]}
+        ];
+
+        const shopping = {
+            "cuna": {
+                emoji: "🛏️",
+                title: "Cunas y Colecho",
+                items: [
+                    { name: "Prinsel Baby Colecho Beige", details: "⭐4.5 (886 reviews) - Bestseller", price: "$1,449", link: "https://www.amazon.com.mx/dp/B07DQBYDPS", priority: true },
+                    { name: "Dream On Me Synergy 5-in-1 Convertible", details: "⭐4.4 (3,023 reviews) - Crece con bebé", price: "$2,805", link: "https://www.amazon.com.mx/dp/B00EANJX5Q" },
+                    { name: "Muja Multifuncional Colecho", details: "⭐4.7 (105 reviews) - Con mosquitero y mecedora", price: "$2,659", link: "https://www.amazon.com.mx/dp/B0D2NP22Q2" },
+                    { name: "Safety 1st Cozy Dreams 4-en-1", details: "Colecho con ruedas, altura ajustable", price: "$1,899", link: "https://www.amazon.com.mx/b?node=9841174011" }
+                ]
+            },
+            "bassinet": {
+                emoji: "🧒",
+                title: "Bassinet / Moisés",
+                items: [
+                    { name: "CHIQUI MUNDO Camita Portátil Colecho", details: "⭐4.8 (1,191 reviews) - Bestseller, ajustable", price: "$559", link: "https://www.amazon.com.mx/dp/B0B4PJZ5Y5", priority: true },
+                    { name: "HARPPA Cuddly Moisés Mecedor 3-en-1", details: "⭐4.7 - Malla lateral, 5 alturas", price: "$1,899", link: "https://www.amazon.com/zgbs/baby-products/677977011" },
+                    { name: "Maxi-Cosi Iora Cuna Portátil", details: "Altura ajustable, malla transpirable", price: "$2,499", link: "https://www.amazon.com/zgbs/baby-products/16545432011" },
+                    { name: "Muja 2-en-1 Multifuncional", details: "⭐4.5 (106 reviews) - Mecedora convertible", price: "$2,885", link: "https://www.amazon.com.mx/dp/B0F13J6ZBH" }
+                ]
+            },
+            "carseat": {
+                emoji: "🚗",
+                title: "Car Seat",
+                items: [
+                    { name: "INFANTI Nest Portabebé", details: "⭐4.6 (800+ reviews) - Hasta 13kg, económico", price: "$1,559", link: "https://www.amazon.com.mx/dp/B095XQKP24", priority: true },
+                    { name: "Safety 1st Grow and Go 3 etapas", details: "⭐4.8 (2,500+ reviews) - Convertible hasta 25kg", price: "$3,999", link: "https://www.amazon.com.mx/s?k=autoasiento+infantil" },
+                    { name: "Safety 1st Evolve 360", details: "⭐4.7 (1,500+ reviews) - Giratorio, hasta 36kg", price: "$6,999", link: "https://www.amazon.com.mx/b?node=9841139011" }
+                ]
+            },
+            "dormir": {
+                emoji: "😴",
+                title: "Dormir",
+                items: [
+                    { name: "KeaBabies Sábanas Bambú+Algodón (2 pzs)", details: "⭐4.8 (1,200+ reviews)", price: "$549", link: "https://www.amazon.com.mx/dp/B0DFBVWVYC" },
+                    { name: "Memory Foam Baby Colchón 120x60", details: "⭐4.7 (800+ reviews) - Hecho en México", price: "$1,079", link: "https://www.amazon.com.mx/dp/B081TDLS8M" },
+                    { name: "Colchones Dorm Protector Bambú", details: "⭐4.8 (400+ reviews) - 18 certificaciones", price: "$549", link: "https://www.amazon.com.mx/dp/B0D7DMKZ1N" },
+                    { name: "Love to Dream Swaddle Up", details: "⭐4.9 (5,000+ reviews) - Brazos arriba", price: "$799", link: "https://www.amazon.com.mx/b?node=9841189011" },
+                    { name: "Momcozy Mantas Muselina (4 pack)", details: "⭐4.8 (3,000+ reviews) - Bambú+algodón", price: "$899", link: "https://www.amazon.com.mx/dp/B098NY9KW8" }
+                ]
+            },
+            "panales": {
+                emoji: "🧷",
+                title: "Pañales",
+                items: [
+                    { name: "Huggies Supreme Recién Nacido (40 pzs)", details: "⭐4.9 (7,199 reviews) - Bestseller", price: "$159", link: "https://www.amazon.com.mx/dp/B01MSSUR4Q" },
+                    { name: "WaterWipes Sin Fragancia (540 pzs)", details: "⭐4.7 (53,022 reviews) - 99.9% agua", price: "$773", link: "https://www.amazon.com.mx/dp/B008KJQMA0" },
+                    { name: "KaiPuYMX Cambiador Portátil", details: "⭐4.5 (600+ reviews) - Impermeable", price: "$349", link: "https://www.amazon.com.mx/dp/B0BJ8C7GNH" },
+                    { name: "Desitin Fuerza Máxima 136g", details: "⭐4.8 (246 reviews) - 40% óxido zinc", price: "$159", link: "https://www.amazon.com.mx/dp/B00PS7G9XM" },
+                    { name: "Diaper Genie Signature", details: "⭐4.7 (6,546 reviews) - Hermético", price: "$1,599", link: "https://www.amazon.com.mx/dp/B0B9H9MTVY" }
+                ]
+            },
+            "alimentacion": {
+                emoji: "🍼",
+                title: "Alimentación",
+                items: [
+                    { name: "Philips Avent Premium 3-en-1", details: "⭐4.8 - Esteriliza+seca+almacena", price: "$2,499", link: "https://www.amazon.com.mx/dp/B08FD8VRYZ" },
+                    { name: "Dr. Brown's Set Anticólicos", details: "⭐4.8 (2,000+ reviews)", price: "$1,299", link: "https://www.amazon.com.mx/dp/B07SR5H23S" },
+                    { name: "Spectra S2 Extractor Grado Hospitalario", details: "⭐4.8 (15,000+ reviews) - El mejor", price: "$4,999", link: "https://www.amazon.com.mx/dp/B00BLBLR1I" },
+                    { name: "Medela Swing Maxi Doble", details: "⭐4.7 (3,720 reviews) - Batería USB", price: "$5,499", link: "https://www.amazon.com.mx/dp/B09BZR21RJ" }
+                ]
+            },
+            "bano": {
+                emoji: "🛁",
+                title: "Baño",
+                items: [
+                    { name: "Bebbly Bañera Plegable + Sensor Temp", details: "⭐4.8 (1,500+ reviews) - Con cojín", price: "$598", link: "https://www.amazon.com.mx/dp/B0CKS73X73" },
+                    { name: "Burts Bees Toallas Capucha (2 pzs)", details: "⭐4.9 (5,000+ reviews) - Algodón orgánico", price: "$699", link: "https://www.amazon.com.mx/b?node=9841205011" },
+                    { name: "Cetaphil Baby Wash Organic 399ml", details: "⭐4.8 (8,000+ reviews) - 2-en-1", price: "$379", link: "https://www.amazon.com.mx/dp/B09JL9NGMB" }
+                ]
+            },
+            "transporte": {
+                emoji: "🚶",
+                title: "Transporte",
+                items: [
+                    { name: "D'BEBÉ Travel System Aventura", details: "⭐4.6 - Carriola + portabebé", price: "$4,999", link: "https://www.amazon.com.mx/b?node=9841145011" },
+                    { name: "Infanti Take it Ultra Compacta", details: "⭐4.7 (1,200+ reviews) - Plegado fácil", price: "$2,999", link: "https://www.amazon.com.mx/dp/B07N14FZBF" },
+                    { name: "Vía Láctea Fular Ergonómico", details: "⭐4.8 - 100% México, hasta 10kg", price: "$549", link: "https://www.amazon.com.mx/dp/B0D4XMDQDT" }
+                ]
+            },
+            "salud": {
+                emoji: "🏥",
+                title: "Salud",
+                items: [
+                    { name: "iHealth PT9L Termómetro 3-en-1", details: "⭐4.7 (2,500+ reviews) - Sin contacto", price: "$1,050", link: "https://www.amazon.com.mx/dp/B0C8JGQSGN" },
+                    { name: "HelloBaby HB40 Monitor 4\"", details: "⭐4.3 (1,778 reviews) - Sin WiFi, visión nocturna", price: "$1,215", link: "https://www.amazon.com.mx/dp/B0BL3NPJNC" }
+                ]
+            }
+        };
+
+        const checklist = {
+            high: [
+                { text: "Cepillo para biberones", cost: "$80-150" },
+                { text: "Bolsas para pañales sucios", note: "Con fragancia", cost: "$100-200" },
+                { text: "Pañales de tela / Burp cloths", note: "6-10 pzas", cost: "$200-400" },
+                { text: "Vaselina", note: "Para termómetro rectal", cost: "$50-100" },
+                { text: "Gel antibacterial", note: "Para pañalera", cost: "$50-100" }
+            ],
+            medium: [
+                { text: "Aceite de oliva para bebé", note: "Costra láctea", cost: "$150-250" },
+                { text: "Cepillo suave para cabello", cost: "$80-150" },
+                { text: "Crema para masaje de bebé", cost: "$150-300" },
+                { text: "Bouncy seat o columpio", cost: "$800-2,000" },
+                { text: "Sombrero con ala", note: "Para 3+ meses", cost: "$150-300" },
+                { text: "Chupón / Pacificador", note: "Opcional", cost: "$150-300" }
+            ],
+            prep: [
+                { text: "Zona de preparación en cocina", note: "Área para biberones" },
+                { text: "Stock de limpieza 6+ semanas" },
+                { text: "Comidas congeladas para USTEDES", note: "Antes semana 36" },
+                { text: "Provisiones para visitas", note: "Té, café, snacks" },
+                { text: "Terminar pendientes de casa" }
+            ]
+        };
+
+        // Initialize
+        const currentWeekNum = 26;
+        
+        function renderTimeline() {
+            const container = document.getElementById('timelineContainer');
+            container.innerHTML = timeline.map(w => `
+                <div class="timeline-week ${w.week === currentWeekNum ? 'current' : ''} ${w.week < currentWeekNum ? 'past' : ''}">
+                    <div class="week-header">
+                        <span class="week-title">Semana ${w.week} ${w.week === currentWeekNum ? '← Actual' : ''}</span>
+                        <span class="week-dates">${w.dates}</span>
+                    </div>
+                    <div class="week-tasks">
+                        ${w.tasks.length ? w.tasks.map(t => `<span class="task-tag ${t.type}">${t.text}</span>`).join('') : '<span class="task-tag">Sin tareas programadas</span>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderShopping() {
+            const container = document.getElementById('shoppingContainer');
+            container.innerHTML = Object.entries(shopping).map(([key, cat]) => `
+                <div class="category-card">
+                    <div class="category-header" onclick="toggleCategory('${key}')">
+                        <div class="category-title">
+                            <span class="category-emoji">${cat.emoji}</span>
+                            <span>${cat.title}</span>
+                        </div>
+                        <div class="category-stats">
+                            <span>${cat.items.length} productos</span>
+                            <span>▼</span>
+                        </div>
+                    </div>
+                    <div class="category-body" id="cat-${key}">
+                        ${cat.items.map((item, i) => `
+                            <div class="product" id="prod-${key}-${i}">
+                                <input type="checkbox" onchange="toggleProduct('${key}', ${i})">
+                                <div class="product-info">
+                                    <div class="product-name">${item.priority ? '⭐ ' : ''}${item.name}</div>
+                                    <div class="product-details">${item.details}</div>
+                                </div>
+                                <div class="product-price">${item.price}</div>
+                                <a href="${item.link}" target="_blank" class="product-link">Ver →</a>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderChecklist() {
+            ['high', 'medium', 'prep'].forEach(priority => {
+                const container = document.getElementById(`checklist${priority.charAt(0).toUpperCase() + priority.slice(1)}`);
+                container.innerHTML = checklist[priority].map((item, i) => `
+                    <div class="checklist-item" id="check-${priority}-${i}">
+                        <input type="checkbox" id="cb-${priority}-${i}" onchange="toggleCheck('${priority}', ${i})">
+                        <label for="cb-${priority}-${i}">${item.text}</label>
+                        ${item.note ? `<span class="note">${item.note}</span>` : ''}
+                        ${item.cost ? `<span class="cost">${item.cost}</span>` : ''}
+                    </div>
+                `).join('');
+            });
+        }
+
+        function toggleCategory(key) {
+            document.getElementById(`cat-${key}`).classList.toggle('open');
+        }
+
+        function toggleProduct(key, idx) {
+            document.getElementById(`prod-${key}-${idx}`).classList.toggle('checked');
+            saveState();
+            updateStats();
+        }
+
+        function toggleCheck(priority, idx) {
+            document.getElementById(`check-${priority}-${idx}`).classList.toggle('checked');
+            saveState();
+            updateStats();
+        }
+
+        function updateStats() {
+            const totalProducts = Object.values(shopping).reduce((sum, cat) => sum + cat.items.length, 0);
+            const checkedProducts = document.querySelectorAll('.product.checked').length;
+            const totalChecklist = Object.values(checklist).reduce((sum, items) => sum + items.length, 0);
+            const checkedChecklist = document.querySelectorAll('.checklist-item.checked').length;
+            
+            const total = totalProducts + totalChecklist;
+            const checked = checkedProducts + checkedChecklist;
+            const percent = Math.round((checked / total) * 100);
+            
+            document.getElementById('itemsLeft').textContent = total - checked;
+            document.getElementById('completion').textContent = percent + '%';
+            document.getElementById('progressPercent').textContent = percent + '%';
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function saveState() {
+            const state = {
+                products: [...document.querySelectorAll('.product.checked')].map(el => el.id),
+                checklist: [...document.querySelectorAll('.checklist-item.checked')].map(el => el.id)
+            };
+            localStorage.setItem('bebe-avo-state', JSON.stringify(state));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('bebe-avo-state');
+            if (saved) {
+                const state = JSON.parse(saved);
+                state.products.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.classList.add('checked');
+                        el.querySelector('input').checked = true;
+                    }
+                });
+                state.checklist.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.classList.add('checked');
+                        el.querySelector('input').checked = true;
+                    }
+                });
+            }
+        }
+
+        function exportData() {
+            let csv = 'Categoría,Producto,Precio,Estado,Link\n';
+            Object.entries(shopping).forEach(([key, cat]) => {
+                cat.items.forEach((item, i) => {
+                    const checked = document.getElementById(`prod-${key}-${i}`).classList.contains('checked') ? 'Comprado' : 'Pendiente';
+                    csv += `"${cat.title}","${item.name}","${item.price}","${checked}","${item.link}"\n`;
+                });
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Bebe_AVO_Lista_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        // Tab navigation
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Init
+        renderTimeline();
+        renderShopping();
+        renderChecklist();
+        loadState();
+        updateStats();
+    </script>
+</body>
+</html>

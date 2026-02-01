@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bebé AVO - Checklist Visual</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .subtitle {
+            color: rgba(255,255,255,0.8);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            height: 30px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #00f260, #0575e6);
+            height: 100%;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .card h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .card h2 .emoji { font-size: 1.5em; }
+        .priority-high { border-left: 4px solid #e74c3c; }
+        .priority-medium { border-left: 4px solid #f39c12; }
+        .priority-low { border-left: 4px solid #27ae60; }
+        .priority-prep { border-left: 4px solid #9b59b6; }
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+        .item:hover { background: #e9ecef; transform: translateX(5px); }
+        .item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        .item label {
+            flex: 1;
+            cursor: pointer;
+            color: #333;
+        }
+        .item .note {
+            font-size: 0.85em;
+            color: #666;
+            margin-left: 10px;
+        }
+        .item.checked label { text-decoration: line-through; color: #999; }
+        .cost {
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            color: #666;
+        }
+        .summary {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        .summary h2 { color: white; }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+        .stat { padding: 15px; background: rgba(255,255,255,0.2); border-radius: 12px; }
+        .stat-number { font-size: 2em; font-weight: bold; }
+        .stat-label { font-size: 0.9em; opacity: 0.9; }
+        .books {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        .books h2 { color: white; }
+        .book-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .book {
+            background: rgba(255,255,255,0.2);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        .book strong { display: block; margin-bottom: 4px; }
+        @media (max-width: 600px) {
+            .stat-grid { grid-template-columns: 1fr; }
+            .book-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👶 Bebé Arredondo von Oppersdorff</h1>
+        <p class="subtitle">Semana 26 · Basado en 5 libros de crianza</p>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 90%">90% Completo</div>
+        </div>
+
+        <div class="card summary">
+            <h2><span class="emoji">📊</span> Resumen</h2>
+            <div class="stat-grid">
+                <div class="stat">
+                    <div class="stat-number" id="totalItems">12</div>
+                    <div class="stat-label">Items Faltantes</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">$2-4K</div>
+                    <div class="stat-label">Costo Estimado</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Libros Revisados</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card priority-high">
+            <h2><span class="emoji">🔴</span> Prioridad Alta (Día 1)</h2>
+            <div class="item">
+                <input type="checkbox" id="i1">
+                <label for="i1">Cepillo para biberones</label>
+                <span class="cost">$80-150</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="i2">
+                <label for="i2">Bolsas para pañales sucios</label>
+                <span class="note">Con fragancia</span>
+                <span class="cost">$100-200</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="i3">
+                <label for="i3">Pañales de tela / Burp cloths</label>
+                <span class="note">6-10 pzas</span>
+                <span class="cost">$200-400</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="i4">
+                <label for="i4">Vaselina</label>
+                <span class="note">Para termómetro rectal</span>
+                <span class="cost">$50-100</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="i5">
+                <label for="i5">Gel antibacterial</label>
+                <span class="note">Para pañalera</span>
+                <span class="cost">$50-100</span>
+            </div>
+        </div>
+
+        <div class="card priority-medium">
+            <h2><span class="emoji">🟡</span> Prioridad Media (Primeras semanas)</h2>
+            <div class="item">
+                <input type="checkbox" id="i6">
+                <label for="i6">Aceite de oliva para bebé</label>
+                <span class="note">Costra láctea</span>
+                <span class="cost">$150-250</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="i7">
+                <label for="i7">Cepillo suave para cabello</label>
+                <span class="cost">$80-150</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="i8">
+                <label for="i8">Crema para masaje de bebé</label>
+                <span class="cost">$150-300</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="i9">
+                <label for="i9">Bouncy seat o columpio</label>
+                <span class="cost">$800-2,000</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="i10">
+                <label for="i10">Sombrero con ala</label>
+                <span class="note">Para 3+ meses</span>
+                <span class="cost">$150-300</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="i11">
+                <label for="i11">Chupón / Pacificador</label>
+                <span class="note">Opcional - sleep aid</span>
+                <span class="cost">$150-300</span>
+            </div>
+        </div>
+
+        <div class="card priority-prep">
+            <h2><span class="emoji">📋</span> Preparativos (No son compras)</h2>
+            <div class="item">
+                <input type="checkbox" id="p1">
+                <label for="p1">Zona de preparación en cocina</label>
+                <span class="note">Área para biberones</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="p2">
+                <label for="p2">Stock de limpieza 6+ semanas</label>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="p3">
+                <label for="p3">Comidas congeladas para USTEDES</label>
+                <span class="note">Antes semana 36</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="p4">
+                <label for="p4">Provisiones para visitas</label>
+                <span class="note">Té, café, snacks</span>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="p5">
+                <label for="p5">Terminar pendientes de casa</label>
+            </div>
+        </div>
+
+        <div class="card books">
+            <h2><span class="emoji">📚</span> Libros Procesados</h2>
+            <div class="book-grid">
+                <div class="book">
+                    <strong>Jo Frost</strong>
+                    Confident Baby Care - Rutinas, equipamiento
+                </div>
+                <div class="book">
+                    <strong>Gina Ford</strong>
+                    Contented Little Baby - Rutinas CLB
+                </div>
+                <div class="book">
+                    <strong>Gottman</strong>
+                    Emotion Coaching - Inteligencia emocional
+                </div>
+                <div class="book">
+                    <strong>Philippa Perry</strong>
+                    Book You Wish... - Relación padres-hijos
+                </div>
+                <div class="book">
+                    <strong>Julie Morgenstern</strong>
+                    Time to Parent - Sistema P.A.R.T.
+                </div>
+            </div>
+        </div>
+
+        <div class="card priority-low">
+            <h2><span class="emoji">⚠️</span> Nota Importante</h2>
+            <p style="color: #666; line-height: 1.6;">
+                El Excel dice "Esterilizador - solo después semana 6".<br>
+                <strong style="color: #e74c3c;">Si usan jeringas de calostro, lo necesitan desde día 1.</strong>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Guardar estado en localStorage
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            const saved = localStorage.getItem(cb.id);
+            if (saved === 'true') {
+                cb.checked = true;
+                cb.closest('.item').classList.add('checked');
+            }
+            cb.addEventListener('change', function() {
+                localStorage.setItem(this.id, this.checked);
+                this.closest('.item').classList.toggle('checked', this.checked);
+                updateProgress();
+            });
+        });
+
+        function updateProgress() {
+            const total = document.querySelectorAll('.priority-high input, .priority-medium input').length;
+            const checked = document.querySelectorAll('.priority-high input:checked, .priority-medium input:checked').length;
+            const remaining = total - checked;
+            document.getElementById('totalItems').textContent = remaining;
+            const baseProgress = 90;
+            const additionalProgress = (checked / total) * 10;
+            const newProgress = Math.round(baseProgress + additionalProgress);
+            document.getElementById('progressFill').style.width = newProgress + '%';
+            document.getElementById('progressFill').textContent = newProgress + '% Completo';
+        }
+    </script>
+</body>
+</html>
