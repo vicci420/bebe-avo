@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bebé Arredondo von Oppersdorff 👶</title>
+    <style>
+        :root { --primary: #2563eb; --success: #16a34a; --warning: #ca8a04; --danger: #dc2626; --bg: #fff; --card: #f8fafc; --text: #1e293b; --muted: #64748b; --border: #e2e8f0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 15px; }
+        .header { text-align: center; padding: 20px 0; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+        .header h1 { font-size: 1.5em; margin-bottom: 5px; }
+        .header .sub { color: var(--muted); font-size: 0.9em; }
+        .badge { display: inline-block; background: var(--primary); color: #fff; padding: 5px 14px; border-radius: 15px; font-weight: 600; font-size: 0.85em; margin-top: 10px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat { background: var(--card); border-radius: 10px; padding: 12px; text-align: center; border: 1px solid var(--border); }
+        .stat-n { font-size: 1.5em; font-weight: 700; color: var(--primary); }
+        .stat-l { color: var(--muted); font-size: 0.8em; }
+        .progress-c { background: var(--card); border-radius: 10px; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .progress-h { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85em; }
+        .progress-b { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .progress-f { height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.3s; }
+        .tabs { display: flex; gap: 6px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; flex-wrap: wrap; }
+        .tab { padding: 8px 12px; background: transparent; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.8em; color: var(--muted); }
+        .tab:hover { background: var(--card); }
+        .tab.active { background: var(--primary); color: #fff; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .cat { background: var(--card); border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); overflow: hidden; }
+        .cat-h { padding: 12px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 0.9em; }
+        .cat-h:hover { background: #f1f5f9; }
+        .cat-b { display: none; padding: 0 15px 12px; }
+        .cat-b.open { display: block; }
+        .item { display: flex; align-items: center; padding: 10px; background: #fff; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); font-size: 0.85em; }
+        .item input { width: 18px; height: 18px; margin-right: 10px; accent-color: var(--primary); flex-shrink: 0; }
+        .item-i { flex: 1; min-width: 0; }
+        .item-n { font-weight: 500; }
+        .item-d { color: var(--muted); font-size: 0.8em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-p { font-weight: 600; color: var(--success); margin: 0 8px; font-size: 0.8em; white-space: nowrap; }
+        .item-l { color: var(--primary); text-decoration: none; padding: 4px 8px; border-radius: 4px; background: #eff6ff; font-size: 0.75em; white-space: nowrap; }
+        .item-l:hover { background: var(--primary); color: #fff; }
+        .item.checked { opacity: 0.5; }
+        .item.checked .item-n { text-decoration: line-through; }
+        .export { position: fixed; bottom: 15px; right: 15px; background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 500; cursor: pointer; font-size: 0.85em; box-shadow: 0 2px 10px rgba(37,99,235,0.3); }
+        .filter { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .filter-b { padding: 6px 12px; background: var(--card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.8em; }
+        .filter-b.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .search { flex: 1; min-width: 150px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85em; }
+        .week { background: var(--card); border-radius: 8px; padding: 12px 15px; margin-bottom: 8px; border: 1px solid var(--border); }
+        .week.current { border-color: var(--primary); border-width: 2px; }
+        .week-h { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85em; }
+        .week-t { font-weight: 600; }
+        .week-d { color: var(--muted); }
+        .week-tasks { display: flex; flex-wrap: wrap; gap: 4px; }
+        .tag { background: #fff; border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; font-size: 0.75em; }
+        .tag.medical { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+        .tag.education { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+        .tag.purchase { background: #f0fdf4; border-color: #bbf7d0; color: #16a34a; }
+        .tag.prep { background: #fefce8; border-color: #fef08a; color: #ca8a04; }
+        .info-card { background: linear-gradient(135deg, #eff6ff, #f0fdf4); border: 1px solid var(--border); border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+        .info-card h3 { font-size: 0.95em; margin-bottom: 10px; color: var(--primary); }
+        .info-card ul { margin-left: 20px; font-size: 0.85em; }
+        .info-card li { margin-bottom: 4px; }
+        .contact { background: #fefce8; border: 1px solid #fef08a; border-radius: 8px; padding: 12px; margin-bottom: 10px; font-size: 0.85em; }
+        .contact strong { color: var(--warning); }
+        @media (max-width: 600px) { .stats { grid-template-columns: repeat(2, 1fr); } .item { flex-wrap: wrap; } .item-p, .item-l { margin-top: 5px; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <h1>👶 Bebé Arredondo von Oppersdorff</h1>
+        <p class="sub">Vollständige Checkliste · Finale Ansehension</p>
+        <div class="badge">Woche 26 · 98 Tage verbleibend</div>
+    </header>
+    <div class="stats">
+        <div class="stat"><div class="stat-n" id="total">0</div><div class="stat-l">Gesamt</div></div>
+        <div class="stat"><div class="stat-n" id="pending">0</div><div class="stat-l">Ausstehend</div></div>
+        <div class="stat"><div class="stat-n" id="cost">$0</div><div class="stat-l">Geschätzt</div></div>
+        <div class="stat"><div class="stat-n" id="pct">0%</div><div class="stat-l">Fertig</div></div>
+    </div>
+    <div class="progress-c">
+        <div class="progress-h"><span>Fortschritt</span><span id="pct2">0%</span></div>
+        <div class="progress-b"><div class="progress-f" id="bar" style="width:0%"></div></div>
+    </div>
+    <div class="tabs">
+        <button class="tab active" data-t="compras">🛒 Einkäufe</button>
+        <button class="tab" data-t="hospital">🏥 Krankenhaus</button>
+        <button class="tab" data-t="mama">👩 Mama</button>
+        <button class="tab" data-t="timeline">📅 Zeitplan</button>
+        <button class="tab" data-t="info">📚 Nützliche Info</button>
+    </div>
+    <div class="section active" id="compras">
+        <div class="filter">
+            <input type="text" class="search" placeholder="Suchen..." id="search" oninput="filter()">
+            <button class="filter-b active" data-f="all" onclick="setF('all')">Alle</button>
+            <button class="filter-b" data-f="pending" onclick="setF('pending')">Ausstehend</button>
+            <button class="filter-b" data-f="done" onclick="setF('done')">Gekauft</button>
+        </div>
+        <div id="shopC"></div>
+    </div>
+    <div class="section" id="hospital"><div id="hospC"></div></div>
+    <div class="section" id="mama"><div id="mamaC"></div></div>
+    <div class="section" id="timeline"><div id="timeC"></div></div>
+    <div class="section" id="info"><div id="infoC"></div></div>
+</div>
+<button class="export" onclick="exp()">📥 CSV</button>
+
+<script>
+const D = {
+compras: {
+"dormir": { e: "🛏️", t: "Schlafen / Zimmer", i: [
+    { n: "Cuna Convertible ESQUIMAL 3-en-1", d: "125x65cm · Madera · 6m-5años", p: "$5,699", l: "https://www.amazon.com.mx/s?k=ESQUIMAL+cuna+convertible+madera", x: 1 },
+    { n: "Bassinet Muja Colecho", d: "⭐4.7 · Mosquitero+mecedora · 0-6m", p: "$2,659", l: "https://www.amazon.com.mx/s?k=Muja+cuna+colecho+multifuncional", x: 1 },
+    { n: "Colchón Cuna LOLOKID 60x120", d: "Hipoalergénico · Doble capa", p: "$1,199", l: "https://www.amazon.com.mx/s?k=ESQUIMAL+cuna+convertible+madera" },
+    { n: "Protector Colchón Impermeable", d: "Nap Baby 70x130cm", p: "$549", l: "https://www.amazon.com.mx/s?k=protector+colchon+cuna+impermeable" },
+    { n: "Sábanas Ajustables Algodón (3)", d: "Para cuna", p: "$450" },
+    { n: "Sábanas Planas Algodón (4)", d: "Para swaddling", p: "$400" },
+    { n: "Mantas Algodón Waffle (4-6)", d: "Para dormir y envolver", p: "$600" },
+    { n: "Manta Cálida (1)", d: "Para invierno", p: "$300" },
+    { n: "Saco para Dormir", d: "Según clima · Evita cobijas sueltas", p: "$450" },
+    { n: "Monitor HelloBaby 4\"", d: "⭐4.3 · Sin WiFi · Visión nocturna", p: "$1,215", l: "https://www.amazon.com.mx/s?k=HelloBaby+monitor+bebe" },
+    { n: "Cómoda 6 Cajones Storkcraft", d: "⭐4.6 · GREENGUARD · 47.9\"W", p: "$6,749", l: "https://www.amazon.com.mx/s?k=Storkcraft+comoda+6+cajones", x: 1 },
+    { n: "Mecedora/Silla Stillen", d: "Cómoda para noches", p: "$3,000" },
+    { n: "Tapete Foamy MoMat", d: "EVA · Suave · Para cuarto bebé", p: "$1,390", l: "https://www.amazon.com.mx/s?k=tapete+foamy+bebe+MoMat" },
+    { n: "Nidito Portátil petit nap", d: "Colecho portátil · 0-4m", p: "$999", l: "https://www.amazon.com.mx/s?k=tapete+foamy+bebe+MoMat" },
+    { n: "Cambiador Contorneado Ingenuity", d: "Con correa seguridad", p: "$882", l: "https://www.amazon.com.mx/s?k=Storkcraft+comoda+6+cajones" },
+    { n: "Cajones/Canastas Organizadoras", d: "Para pasillo y cuarto", p: "$500" },
+    { n: "Cortinas Blackout (2)", d: "Cuarto bebé + recámara", p: "$1,200" },
+    { n: "Dimmer Switch", d: "Control de luz gradual", p: "$300" },
+    { n: "Luz Roja Nocturna", d: "Para lactancia sin despertar", p: "$250" },
+    { n: "Termómetro/Higrómetro Ambiente", d: "Temp ideal: 20-22°C", p: "$200" }
+]},
+"panales": { e: "🧷", t: "Windeln / Wickeln", i: [
+    { n: "Pañales Huggies RN (2+ paq)", d: "⭐4.9 · 40pz c/u · Hasta 3.5kg", p: "$318", l: "https://www.amazon.com.mx/Huggies-Pa%C3%B1ales-Supreme-Unisex-Reci%C3%A9n/dp/B01MSSUR4Q", x: 1 },
+    { n: "Pañales Talla 1 (2 paq)", d: "Para después de RN", p: "$350" },
+    { n: "Toallitas WaterWipes (540)", d: "⭐4.7 · 99.9% agua · Sin fragancia", p: "$773", l: "https://www.amazon.com.mx/Waterwipes-Piezas-Color-Blanco-Paquete/dp/B0829CJPGN", x: 1 },
+    { n: "Cambiador Portátil", d: "Impermeable · Para salidas", p: "$349", l: "https://www.amazon.com.mx/s?k=cambiador+portatil+bebe+impermeable" },
+    { n: "Crema Rozaduras Desitin", d: "⭐4.8 · 40% zinc · Cada cambio", p: "$159", l: "https://www.amazon.com.mx/s?k=Desitin+crema+rozaduras", x: 1 },
+    { n: "Diaper Genie Compact", d: "⭐4.7 · 165 pañales · Hermético", p: "$762", l: "https://www.amazon.com.mx/s?k=Diaper+Genie+panalera" },
+    { n: "Bolsas Pañales Sucios", d: "Con fragancia · Para salidas", p: "$150" },
+    { n: "Burp Cloths (6-10)", d: "Pañales tela · Para reflujo", p: "$300", x: 1 }
+]},
+"alimentacion": { e: "🍼", t: "Ernährung / Stillen", i: [
+    { n: "Jeringas Calostro (10+)", d: "Para recolección sem 38+", p: "$200", x: 1 },
+    { n: "Bolsas Almacenamiento Leche", d: "Para congelar", p: "$250" },
+    { n: "Biberones Dr. Brown's Anticólicos", d: "⭐4.8 · Set completo", p: "$1,299", l: "https://www.amazon.com.mx/s?k=Dr+Browns+biberones+anticolicos+set" },
+    { n: "Esterilizador Philips Avent 3-en-1", d: "⭐4.8 · Esteriliza+seca+guarda", p: "$2,499", l: "https://www.amazon.com.mx/s?k=Philips+Avent+esterilizador+3+en+1" },
+    { n: "Cepillo para Biberones", d: "Uso desde día 1", p: "$100", x: 1 },
+    { n: "Extractor Spectra S2", d: "⭐4.8 · Grado hospitalario", p: "$4,999", l: "https://www.amazon.com.mx/s?k=Spectra+S2+extractor+leche" },
+    { n: "Almohada Stillen", d: "V o T-shaped", p: "$600" },
+    { n: "Brasier Stillen (3-4)", d: "Sin underwire · Tirantes anchos", p: "$800" },
+    { n: "Discos Protectores Stillen", d: "Desechables/reutilizables", p: "$200" },
+    { n: "Lanolina / Crema Pezones", d: "Para grietas", p: "$180" }
+]},
+"bano": { e: "🛁", t: "Bad / Hygiene", i: [
+    { n: "Bañera ESQUIMAL Plegable", d: "⭐4.7 · Con termómetro", p: "$989", l: "https://www.amazon.com.mx/s?k=banera+bebe+plegable+termometro" },
+    { n: "Toallas con Capucha (2-4)", d: "Algodón · Absorbentes", p: "$500" },
+    { n: "Cotonetes Bebé", d: "Solo uso externo", p: "$50" },
+    { n: "Algodón", d: "Para limpieza", p: "$50" },
+    { n: "Jabón Cetaphil Baby 399ml", d: "⭐4.8 · 2-en-1 · Sin lágrimas", p: "$379", l: "https://www.amazon.com.mx/s?k=Cetaphil+Baby+wash+shampoo" },
+    { n: "Shampoo Suave Bebé", d: "Solo agua primeras 3-4 sem", p: "$150" },
+    { n: "Cortauñas Bebé", d: "Punta redondeada · Tijeras o lima", p: "$100" },
+    { n: "Sterimar / Suero Nasal", d: "Para congestión", p: "$180" },
+    { n: "Gasas Estériles", d: "Uso general y ombligo", p: "$80" },
+    { n: "Jabón ZOTE Hojuelas", d: "Para lavar ropa bebé", p: "$50" },
+    { n: "Aceite Oliva Bebé", d: "Para costra láctea", p: "$200" },
+    { n: "Cepillo Cabello Suave", d: "Para costra láctea", p: "$100" },
+    { n: "Crema Masaje Bebé", d: "Para bonding y relajación", p: "$200" }
+]},
+"ropa": { e: "👕", t: "Babykleidung", i: [
+    { n: "Bodies/Onesies (8-10)", d: "Con snaps · Manga corta+larga", p: "$600", x: 1 },
+    { n: "Calcetines/Botitas (5-8 pares)", d: "", p: "$250" },
+    { n: "Gorritos Algodón (3)", d: "Para hospital y casa", p: "$150" },
+    { n: "Gorro Temporada", d: "Según clima", p: "$150" },
+    { n: "Mamelucos/Sleepers (6-8)", d: "Con pies · Fácil cambio", p: "$700" },
+    { n: "Suéteres/Chamarras (2-3)", d: "", p: "$450" },
+    { n: "Baberos (4-8)", d: "", p: "$200" },
+    { n: "Trapitos/Toallitas (5-8)", d: "Multiuso", p: "$200" },
+    { n: "Cobijitas Recibidoras (2-3)", d: "Ligeras", p: "$300" },
+    { n: "Sombrero con Ala", d: "Para 3+ meses · Sol", p: "$200" },
+    { n: "Guantes Antirrasguños", d: "Primeras semanas", p: "$80" }
+]},
+"transporte": { e: "🚗", t: "Transport / Ausflüge", i: [
+    { n: "Car Seat Graco Extend2Fit", d: "⭐4.8 · NUEVO · Rear-facing 1+ año", p: "$5,447", l: "https://www.amazon.com.mx/s?k=Graco+Extend2Fit+car+seat", x: 1 },
+    { n: "Protector Asiento Meolsaek", d: "600D impermeable", p: "$230", l: "https://www.amazon.com.mx/s?k=Storkcraft+comoda+6+cajones" },
+    { n: "Espejo Retrovisor Bebé Shynerk", d: "Vista amplia · Seguridad", p: "$325", l: "https://www.amazon.com.mx/s?k=Storkcraft+comoda+6+cajones" },
+    { n: "Carriola", d: "Posición plana para 0-6m", p: "$4,000" },
+    { n: "Portabebé BabyBjörn Mini", d: "⭐4.8 · 0-12 meses", p: "$1,686", l: "https://www.amazon.com.mx/s?k=Storkcraft+comoda+6+cajones" },
+    { n: "Fular Ergonómico", d: "Alternativa al portabebé", p: "$550" },
+    { n: "Pañalera", d: "Con compartimentos", p: "$500" },
+    { n: "Parasol Coche", d: "Para ventanas traseras", p: "$150" }
+]},
+"salud": { e: "🏥", t: "Gesundheit", i: [
+    { n: "Termómetro Digital Rectal", d: "Más preciso para bebés", p: "$200" },
+    { n: "Termómetro iHealth 3-en-1", d: "⭐4.7 · Sin contacto · Rápido", p: "$1,050", l: "https://www.amazon.com.mx/s?k=iHealth+termometro+bebe+infrarrojo" },
+    { n: "Vaselina", d: "Para termómetro rectal", p: "$60", x: 1 },
+    { n: "Gel Antibacterial", d: "Para pañalera", p: "$60" },
+    { n: "Aspirador Nasal", d: "Manual o eléctrico", p: "$150" },
+    { n: "Gotero/Jeringa Medicamentos", d: "Para dar medicina", p: "$50" },
+    { n: "Kit Primeros Auxilios Bebé", d: "Básico", p: "$200" }
+]},
+"equipo": { e: "🎠", t: "Zusätzliche Ausstattung", i: [
+    { n: "Bouncer Maxi-Cosi Loa", d: "0-9kg · 0-6m · Estimulación", p: "$2,094", l: "https://www.amazon.com.mx/s?k=Storkcraft+comoda+6+cajones" },
+    { n: "Columpio Bebé", d: "Opcional · Relajación", p: "$1,500" },
+    { n: "Chupón/Pacificador (2-3)", d: "Opcional · Ayuda dormir", p: "$200" },
+    { n: "Gym de Actividades", d: "Estimulación 0-6m", p: "$600" },
+    { n: "Tarjetas Blanco/Negro", d: "Estimulación visual 0-3m", p: "$150" },
+    { n: "Móvil Musical", d: "Para cuna", p: "$400" },
+    { n: "Máquina Ruido Blanco", d: "Ayuda a dormir", p: "$350" }
+]}
+},
+hospital: {
+"mama": { e: "👩", t: "Krankenhaus - Maleta Mama", i: [
+    { n: "Calzones Holgados (3-4)", d: "Cómodos · Desechables ok", p: "$150" },
+    { n: "Brasieres Stillen (2)", d: "Sin underwire", p: "$400" },
+    { n: "Pañales Tena/Frida Mom", d: "Sangrado postparto", p: "$200", x: 1 },
+    { n: "Camisones Abertura Frontal (2)", d: "Para lactancia fácil", p: "$400" },
+    { n: "Bata/Robe", d: "Para caminar", p: "$300" },
+    { n: "Sandalias Plástico", d: "Para ducha hospital", p: "$100" },
+    { n: "Calcetines Antiderrapantes", d: "Para caminar", p: "$80" },
+    { n: "Ropa Salida", d: "Cómoda · Elástica", p: "" },
+    { n: "Zapatos Cómodos", d: "Sin agacharse", p: "" },
+    { n: "Cosmetiquera/Higiene", d: "Shampoo, cepillo, crema, etc", p: "" },
+    { n: "Toallas Sanitarias Nocturnas", d: "Para primeros días", p: "$100" },
+    { n: "Discos Stillen", d: "Para goteo", p: "$80" },
+    { n: "Lanolina", d: "Para pezones", p: "$150" },
+    { n: "DOCUMENTOS", d: "Plan Nacimiento, Seguro, Análisis, IDs", p: "", x: 1 },
+    { n: "Dinero/Tarjeta", d: "", p: "" },
+    { n: "Celular + Cargador + Audífonos", d: "", p: "" },
+    { n: "Antifaz + Tapones", d: "Para descansar", p: "$100" }
+]},
+"parto": { e: "🤰", t: "Krankenhaus - Geburt", i: [
+    { n: "Fitball/Pelota Pilates 75cm", d: "Para posiciones", p: "$350", x: 1 },
+    { n: "Aceites Esenciales + Difusor", d: "Aromaterapia relajante", p: "$400" },
+    { n: "Masajeador/Pelotas Masaje", d: "Para espalda", p: "$200" },
+    { n: "Playlist Relajante", d: "Preparar antes · Bocina pequeña", p: "" },
+    { n: "Imágenes/Frases Motivacionales", d: "Visualización", p: "" },
+    { n: "Rebozo", d: "Técnicas de alivio", p: "$300" },
+    { n: "Compresas Frío-Calor", d: "Para dolor", p: "$200" },
+    { n: "Ventilador/Abanico Portátil", d: "Refrescar", p: "$150" },
+    { n: "Snacks y Fruta", d: "Energía para parto largo", p: "$200" },
+    { n: "Botella Agua con Popote", d: "Hidratación fácil", p: "$100" },
+    { n: "Agua de Coco", d: "Electrolitos", p: "$100" },
+    { n: "Labial Hidratante", d: "Labios secos", p: "$50" },
+    { n: "Ligas para Cabello", d: "", p: "" },
+    { n: "Juegos/Revistas", d: "Mientras esperas", p: "" }
+]},
+"bebe": { e: "👶", t: "Krankenhaus - Krankenhaustasche Baby", i: [
+    { n: "Jeringas con Calostro", d: "Recolectado sem 38+", p: "", x: 1 },
+    { n: "Pañales RN (1 paq)", d: "", p: "$160" },
+    { n: "Toallitas Húmedas", d: "Paquete pequeño", p: "$100" },
+    { n: "Bodies (3-4)", d: "Manga larga", p: "" },
+    { n: "Mamelucos (2-3)", d: "", p: "" },
+    { n: "Gorritos (2)", d: "", p: "" },
+    { n: "Calcetines/Guantes", d: "", p: "" },
+    { n: "Cobijitas (2)", d: "Para envolver", p: "$300" },
+    { n: "Cortauñas/Lima Bebé", d: "", p: "$100" },
+    { n: "Outfit Salida", d: "Especial para fotos", p: "" },
+    { n: "Car Seat INSTALADO", d: "Obligatorio para alta", p: "", x: 1 }
+]}
+},
+mama: {
+"postparto": { e: "💪", t: "Mama - Erholung nach der Geburt", i: [
+    { n: "Pañales Tena/Frida Mom", d: "Sangrado 2-6 semanas", p: "$300" },
+    { n: "Calzones Desechables (paq)", d: "Prácticos primeros días", p: "$150" },
+    { n: "Calzones Compresión PP", d: "Apoyo abdominal", p: "$400" },
+    { n: "Toallas Día Tena/Mía", d: "Después de pañales", p: "$150" },
+    { n: "Toallas Nocturnas", d: "Más absorbentes", p: "$150" },
+    { n: "Banquito para Baño", d: "Apoyo al sentarse", p: "$200" },
+    { n: "Peri Bottle", d: "Limpieza suave", p: "$150" },
+    { n: "Compresas Frías Perineal", d: "Alivio dolor/hinchazón", p: "$200" },
+    { n: "Spray/Crema Perineal", d: "Cicatrización", p: "$180" }
+]},
+"lactancia": { e: "🤱", t: "Mama - Stillen", i: [
+    { n: "Brasier Stillen (4-5)", d: "Sin underwire · Día y noche", p: "$1,000" },
+    { n: "Tops Stillen", d: "Acceso fácil", p: "$600" },
+    { n: "Discos Protectores (varios)", d: "Desechables y reutilizables", p: "$300" },
+    { n: "Lanolina/Crema Pezones", d: "Para grietas", p: "$180" },
+    { n: "Conchas Recolectoras", d: "Para goteo", p: "$200" },
+    { n: "Extractor de Leche", d: "Eléctrico doble recomendado", p: "$4,999" },
+    { n: "Bolsas Almacenamiento Leche", d: "Para congelar", p: "$250" },
+    { n: "Almohada Stillen", d: "Reduce tensión espalda", p: "$600" },
+    { n: "Silla Cómoda Stillen", d: "Importantísima para noches", p: "$3,000" }
+]},
+"bienestar": { e: "🧘", t: "Mama - Wohlbefinden", i: [
+    { n: "Fitball 75cm", d: "Ejercicios y calmar bebé", p: "$350" },
+    { n: "Vitaminas Postparto", d: "Continuar prenatales", p: "$300" },
+    { n: "Té de Stillen", d: "Opcional · Fomentar producción", p: "$150" },
+    { n: "Snacks Gesundheitables", d: "Para madrugadas", p: "$300" },
+    { n: "Botella Agua Grande", d: "Hidratación constante", p: "$150" }
+]}
+}
+};
+
+const TL = [
+    { w: 26, d: "26 Ene - 1 Feb", ts: [
+        { t: "Doula Sandy", c: "education" }, { t: "Doula Gaby", c: "education" },
+        { t: "HIP Doula Lucy 7pm", c: "education" }, { t: "IMSS inscripción", c: "medical" },
+        { t: "Lab tests", c: "medical" }, { t: "Pelota 75cm", c: "purchase" }
+    ]},
+    { w: 27, d: "2 - 8 Feb", ts: [
+        { t: "Videos MOM Center", c: "education" }, { t: "Cita IMSS 8:45AM", c: "medical" },
+        { t: "Amazon Orden #1", c: "purchase" }
+    ]},
+    { w: 28, d: "9 - 15 Feb", ts: [{ t: "VACUNA Tdap", c: "medical" }, { t: "Reunión Doula Sandy?", c: "education" }]},
+    { w: 29, d: "16 - 22 Feb", ts: [{ t: "Finalizar borrador PDN", c: "prep" }, { t: "Dr. Edwin + preguntas pediatra", c: "medical" }]},
+    { w: 30, d: "23 Feb - 1 Mar", ts: [{ t: "Familiarizar BabyCenter App", c: "prep" }, { t: "Amazon Orden #2", c: "purchase" }]},
+    { w: 31, d: "2 - 8 Mar", ts: [{ t: "Borrador Plan Postparto", c: "prep" }]},
+    { w: 32, d: "9 - 15 Mar", ts: [{ t: "Instalar Car Seat", c: "prep" }, { t: "Tour Krankenhaus?", c: "medical" }]},
+    { w: 33, d: "16 - 22 Mar", ts: [{ t: "Finalizar Valores Familiares", c: "prep" }]},
+    { w: 34, d: "23 - 29 Mar", ts: [{ t: "Curso online (regalo)", c: "education" }, { t: "Preparar maleta hospital", c: "prep" }]},
+    { w: 35, d: "30 Mar - 5 Abr", ts: [{ t: "Tarjetas B/N estimulación", c: "purchase" }, { t: "Preparar comidas congeladas", c: "prep" }]},
+    { w: 36, d: "6 - 12 Abr", ts: [{ t: "Documentos Seguro", c: "prep" }, { t: "Confirmación Krankenhaus", c: "medical" }, { t: "Sesión fotos?", c: "prep" }]},
+    { w: 37, d: "13 - 19 Abr", ts: [{ t: "Maletas listas puerta", c: "prep" }, { t: "Números emergencia visibles", c: "prep" }]},
+    { w: 38, d: "20 - 26 Abr", ts: [{ t: "Dentista SvO", c: "medical" }, { t: "Iniciar recolección Calostro", c: "medical" }]},
+    { w: 39, d: "27 Abr - 3 May", ts: [{ t: "Calostro diario", c: "medical" }, { t: "Descansar mucho", c: "prep" }]},
+    { w: 40, d: "4 - 10 May", ts: [{ t: "¡Fecha estimada! 🎉", c: "prep" }]},
+    { w: 41, d: "Postparto", ts: [
+        { t: "Tamiz metabólico día 3 y 7", c: "medical" }, { t: "Tamiz cardiaco >24hrs", c: "medical" },
+        { t: "Tamiz auditivo <3 meses", c: "medical" }, { t: "Tamiz oftalmológico mes 1", c: "medical" },
+        { t: "Tamiz ortopédico sem 4-6", c: "medical" }, { t: "Vacunas según calendario", c: "medical" }
+    ]}
+];
+
+const INFO = `
+<div class="info-card">
+    <h3>📞 Nützliche Kontakte (MOM Center)</h3>
+    <div class="contact"><strong>MOM Center:</strong> 55 5611 4496 · momcentermexico@gmail.com</div>
+    <div class="contact"><strong>Asesora Stillen:</strong> Gabriela Olmedo - 55 2971 0235</div>
+    <div class="contact"><strong>Terapeuta (Postparto):</strong> Patricia Rojas - 55 2699 7675</div>
+</div>
+<div class="info-card">
+    <h3>👶 Las 5 Ss - Baby beruhigen (Harvey Karp)</h3>
+    <ul>
+        <li><strong>Swaddling</strong> - Envolverlo firmemente (brazos adentro)</li>
+        <li><strong>Side/Stomach</strong> - Posición de lado (solo en brazos, NUNCA para dormir)</li>
+        <li><strong>Shushing</strong> - Sonido "shhh" fuerte cerca del oído</li>
+        <li><strong>Swinging</strong> - Mecerlo con movimientos pequeños y rápidos</li>
+        <li><strong>Sucking</strong> - Chupón, dedo o pecho para succionar</li>
+    </ul>
+</div>
+<div class="info-card">
+    <h3>🍼 Hungerzeichen</h3>
+    <ul>
+        <li><strong>Tempranas:</strong> Boca abierta, busca el pecho, manos a la boca</li>
+        <li><strong>Medias:</strong> Se estira, aumenta movimiento, succiona manos</li>
+        <li><strong>Tardías:</strong> Llanto (es la ÚLTIMA señal, no la primera)</li>
+    </ul>
+    <p style="margin-top:8px;font-size:0.85em">✅ <strong>Bebé satisfecho:</strong> 5-6 pañales pipí + 2-5 pañales popó al día</p>
+</div>
+<div class="info-card">
+    <h3>📈 Wachstumsschübe</h3>
+    <ul>
+        <li><strong>Día 15-17:</strong> Toman más leche, más frecuente</li>
+        <li><strong>Woche 6-7:</strong> Cambio de composición de leche</li>
+        <li><strong>Mes 3:</strong> Cambio en cómo se produce la leche</li>
+        <li><strong>Mes 6:</strong> Inicio alimentación complementaria</li>
+    </ul>
+</div>
+<div class="info-card">
+    <h3>😴 Sicherer Schlaf</h3>
+    <ul>
+        <li>SIEMPRE boca arriba (reduce SMSL 50%)</li>
+        <li>Superficie firme y plana</li>
+        <li>Sin almohadas, peluches, cobijas sueltas</li>
+        <li>Temperatura 20-22°C (no sobrecalentar)</li>
+        <li>Bebé en parte inferior de cuna (no puede deslizarse)</li>
+        <li>Saco de dormir mejor que cobijas</li>
+    </ul>
+</div>
+<div class="info-card">
+    <h3>⚠️ Baby Blues vs Wochenbettdepression</h3>
+    <p><strong>Baby Blues (normal, 80% mamás):</strong></p>
+    <ul>
+        <li>Primera semana postparto</li>
+        <li>Llanto fácil, sentirse abrumada</li>
+        <li>Se resuelve solo en 2 semanas</li>
+    </ul>
+    <p style="margin-top:10px"><strong>Depresión Postparto (buscar ayuda):</strong></p>
+    <ul>
+        <li>Después de 2 semanas, hasta 1 año</li>
+        <li>Desesperanza, sin energía, llanto constante</li>
+        <li>Pensamientos de hacerse daño o al bebé</li>
+        <li>➡️ Consultar especialista inmediatamente</li>
+    </ul>
+</div>
+<div class="info-card">
+    <h3>🏥 Neugeborenen-Screening</h3>
+    <ul>
+        <li><strong>Metabólico:</strong> Día 3 y 7 (talón)</li>
+        <li><strong>Cardiaco:</strong> Después de 24 hrs (oxímetro)</li>
+        <li><strong>Auditivo:</strong> Antes de 3 meses</li>
+        <li><strong>Oftalmológico:</strong> Primer mes</li>
+        <li><strong>Ortopédico (cadera):</strong> Woche 4-6</li>
+    </ul>
+</div>
+<div class="info-card">
+    <h3>🚨 Wann den Kinderarzt anrufen</h3>
+    <ul>
+        <li>Fiebre ≥38°C</li>
+        <li>Ictericia en piernas/pies (amarillo intenso)</li>
+        <li>Vómito en proyectil (no regurgitación normal)</li>
+        <li>Diarrea (muy líquida, muchas veces)</li>
+        <li>No moja pañales (deshidratación)</li>
+        <li>Dificultad para respirar</li>
+        <li>Letargo extremo o irritabilidad</li>
+        <li>No come por >4 horas (recién nacido)</li>
+    </ul>
+</div>
+`;
+
+let flt = 'all', src = '';
+
+function render() {
+    rS('compras', 'shopC');
+    rS('hospital', 'hospC');
+    rS('mama', 'mamaC');
+    rTL();
+    document.getElementById('infoC').innerHTML = INFO;
+    load();
+    stats();
+}
+
+function rS(s, c) {
+    document.getElementById(c).innerHTML = Object.entries(D[s]).map(([k, v]) => `
+        <div class="cat">
+            <div class="cat-h" onclick="this.nextElementSibling.classList.toggle('open')">
+                <span>${v.e} ${v.t}</span>
+                <span style="color:var(--muted);font-size:0.8em">${v.i.length}</span>
+            </div>
+            <div class="cat-b">${v.i.map((it, i) => `
+                <div class="item" id="i-${s}-${k}-${i}" data-n="${it.n.toLowerCase()}" data-k="${k}">
+                    <input type="checkbox" onchange="tog('i-${s}-${k}-${i}')">
+                    <div class="item-i">
+                        <div class="item-n">${it.x ? '⭐ ' : ''}${it.n}</div>
+                        ${it.d ? `<div class="item-d">${it.d}</div>` : ''}
+                    </div>
+                    ${it.p ? `<div class="item-p">${it.p}</div>` : ''}
+                    ${it.l ? `<a href="${it.l}" target="_blank" class="item-l">Ansehen</a>` : ''}
+                </div>
+            `).join('')}</div>
+        </div>
+    `).join('');
+}
+
+function rTL() {
+    document.getElementById('timeC').innerHTML = TL.map(w => `
+        <div class="week ${w.w === 26 ? 'current' : ''}">
+            <div class="week-h">
+                <span class="week-t">Woche ${w.w}${w.w === 26 ? ' ← Aktuell' : ''}${w.w === 41 ? ' (Post)' : ''}</span>
+                <span class="week-d">${w.d}</span>
+            </div>
+            <div class="week-tasks">${w.ts.length ? w.ts.map(t => `<span class="tag ${t.c}">${t.t}</span>`).join('') : '<span class="tag">—</span>'}</div>
+        </div>
+    `).join('');
+}
+
+function tog(id) {
+    const e = document.getElementById(id);
+    e.classList.toggle('checked');
+    e.querySelector('input').checked = e.classList.contains('checked');
+    save(); stats();
+}
+
+function stats() {
+    const all = document.querySelectorAll('.item');
+    const done = document.querySelectorAll('.item.checked');
+    const t = all.length, d = done.length;
+    const p = t ? Math.round((d / t) * 100) : 0;
+    let c = 0;
+    all.forEach(e => {
+        if (!e.classList.contains('checked')) {
+            const pr = e.querySelector('.item-p');
+            if (pr) c += parseInt(pr.textContent.replace(/[$,]/g, '')) || 0;
+        }
+    });
+    document.getElementById('total').textContent = t;
+    document.getElementById('pending').textContent = t - d;
+    document.getElementById('cost').textContent = '$' + (c > 1000 ? Math.round(c/1000) + 'K' : c);
+    document.getElementById('pct').textContent = p + '%';
+    document.getElementById('pct2').textContent = p + '%';
+    document.getElementById('bar').style.width = p + '%';
+}
+
+function save() {
+    localStorage.setItem('bebe-avo-v2', JSON.stringify([...document.querySelectorAll('.item.checked')].map(e => e.id)));
+}
+
+function load() {
+    const s = localStorage.getItem('bebe-avo-v2');
+    if (s) JSON.parse(s).forEach(id => {
+        const e = document.getElementById(id);
+        if (e) { e.classList.add('checked'); e.querySelector('input').checked = true; }
+    });
+}
+
+function setF(f) {
+    flt = f;
+    document.querySelectorAll('.filter-b').forEach(b => b.classList.toggle('active', b.dataset.f === f));
+    filter();
+}
+
+function filter() {
+    src = document.getElementById('search').value.toLowerCase();
+    document.querySelectorAll('.item').forEach(e => {
+        const n = e.dataset.n, ch = e.classList.contains('checked');
+        const mS = !src || n.includes(src);
+        const mF = flt === 'all' || (flt === 'done' && ch) || (flt === 'pending' && !ch);
+        e.style.display = mS && mF ? 'flex' : 'none';
+    });
+}
+
+function exp() {
+    let csv = 'Categoría,Producto,Detalles,Precio,Estado,Link\n';
+    document.querySelectorAll('.item').forEach(e => {
+        const n = e.querySelector('.item-n').textContent.replace('⭐ ', '');
+        const d = e.querySelector('.item-d')?.textContent || '';
+        const p = e.querySelector('.item-p')?.textContent || '';
+        const l = e.querySelector('.item-l')?.href || '';
+        const st = e.classList.contains('checked') ? 'Comprado' : 'Pendiente';
+        csv += `"${e.dataset.k}","${n}","${d}","${p}","${st}","${l}"\n`;
+    });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+    a.download = `Bebe_AVO_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+}
+
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+    document.querySelectorAll('.tab, .section').forEach(e => e.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.t).classList.add('active');
+});
+
+render();
+</script>
+</body>
+</html>
